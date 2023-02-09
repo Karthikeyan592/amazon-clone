@@ -3,18 +3,17 @@ import styled from 'styled-components'
 import Card from './Card';
 import Navbar from './Navbar';
 
-function Home({basket, setBasket}) {
+function Home() {
   return (
     <COntainer>
-        <Navbar basket={basket}/>
+        <Navbar/>
         <Banner>
         <img src="./banner1.jpg" alt="" />
         <img src="./mobile_banner.jpg" alt="" />
         </Banner>
         <Main>
-          <Card 
-          basket={basket}
-          setBasket={setBasket}
+          <Card
+          id = {1} 
           img = {"https://www.spotifyvault.com/m/7a62116e5aad456/webimage-Echo-Dot-No-Shadow.png"}
           price={5000}
           rating={3}

@@ -1,11 +1,25 @@
 import { Rating } from '@mui/material';
 import React from 'react'
 import styled from 'styled-components';
-function Card({basket, setBasket, price, rating, description, img}) {
+import { useStateValue } from '../StateProvider';
+function Card({id, price, rating, description, img}) {
     
-    const addtobasket = () =>{
-        setBasket([...basket,{img,description,price,rating}]);
-    };
+  const [{ basket }, dispatch] = useStateValue();
+  console.log("basket >>>>", basket);
+  const addToBasket = (e) => {
+    e.preventDefault();
+
+    dispatch({
+      type: "ADD_TO_BASKET",
+      item: {
+        id,
+        description,
+        price,
+        img,
+        rating,
+      },
+    });
+  };
   
     return (
     <Container>
@@ -16,7 +30,7 @@ function Card({basket, setBasket, price, rating, description, img}) {
             <h5>{description}</h5>
             <Rating name="read-only" value={rating} readOnly />
             <p>₹ {price}</p>
-            <button onClick={addtobasket}>Add to Cart</button>
+            <button onClick={addToBasket}>Add to Cart</button>
         </Description>
     </Container>
   )
