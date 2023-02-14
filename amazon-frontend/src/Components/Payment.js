@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from "react";
+import axios from '../axios';
 import CurrencyFormat from "react-currency-format";
 import styled from "styled-components";
 import { getBasketTotal } from "../reducer";
@@ -9,11 +10,34 @@ import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import Navbar from "./Navbar";
 import { useNavigate } from "react-router-dom";
 
-function Payment() {
+function Payment() { 
 
   const [{address,basket}] = useStateValue();
+
   const elements = useElements();
   const stripe = useStripe();
+  const navigate = useNavigate();
+   
+  const [clientSecret, setClientSecret] = useState("");
+
+
+
+  useEffect(() => {
+    const fetchClientSecret = async () => {
+      const data = await axios.post("/payment/create", {
+        amount: getBasketTotal(basket),
+      });
+      const csecret = data.data.clientSecret;
+      setClientSecret(csecret);
+      console.log(csecret)
+      console.log("clientSecret is >>>>", clientSecret);
+    };
+
+    fetchClientSecret();
+
+  }, []);
+
+  
   return (
     <Container>
       <Navbar />
@@ -21,7 +45,7 @@ function Payment() {
       <Main>
         <ReviewContainer>
           <h2>Review Your Order</h2>
-
+          <h2>{clientSecret}</h2>
           <AddressContainer>
             <h5>Shipping Address</h5>
 
@@ -211,4 +235,5 @@ const Subtotal = styled.div`
     border-radius: 8px;
   }
 `;
+
 export default Payment;

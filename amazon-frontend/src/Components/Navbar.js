@@ -16,7 +16,7 @@ function Navbar() {
             </Logo>
             <SearchBar>
                 <input type="text" placeholder='Search...'></input>
-                <SearchIcon>
+                <SearchIcon onClick={() => navigate("/addproduct")}>
                     <img src="https://www.freeiconspng.com/thumbs/search-icon-png/search-icon-png-21.png"></img>
                 </SearchIcon>
             </SearchBar>
@@ -81,6 +81,7 @@ const SearchBar = styled.div`
 
 `;
 const SearchIcon = styled.div`
+    cursor: pointer;
     background-color: #febd69;
     height: 100%;
     width: 40px;

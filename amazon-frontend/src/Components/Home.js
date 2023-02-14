@@ -1,9 +1,21 @@
-import React from 'react'
+import axios from '../axios';
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Card from './Card';
 import Navbar from './Navbar';
 
 function Home() {
+  const [products, setProducts] = useState("");  
+  useEffect(() => {
+    const fetchdata = async () => {
+      const data = await axios.get("/products/get");
+      console.log("products >>>",data)
+      setProducts(data);
+    };
+    fetchdata();
+
+  }, []);
+
   return (
     <COntainer>
         <Navbar/>
@@ -12,20 +24,16 @@ function Home() {
         <img src="./mobile_banner.jpg" alt="" />
         </Banner>
         <Main>
-          <Card
-          id = {1} 
-          img = {"https://www.spotifyvault.com/m/7a62116e5aad456/webimage-Echo-Dot-No-Shadow.png"}
-          price={5000}
-          rating={3}
-          description={"Echo Dot"}
-          />
-          <Card/>
-          <Card/>
-          <Card/>
-          <Card/>
-          <Card/>
-          <Card/>
-          <Card/>
+          {products &&
+          products.data.map((product) => (
+            <Card
+              id={product._id}
+              img={product.imageURL}
+              price={product.price}
+              rating={product.rating}
+              description={product.title}
+            />
+          ))}
         </Main>
     </COntainer>
     
