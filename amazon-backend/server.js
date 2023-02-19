@@ -1,5 +1,8 @@
 const express = require("express");
 const cors = require("cors");
+const bcrypt = require("bcryptjs");
+const Users = require("./Users");
+const Orders = require("./Orders");
 const stripe = require("stripe")(
     "sk_test_51MZfL1SFs4aiNAvZUtgIMq8YN0JvjBJ0MYZKex6z01MAUVJ0cmAcdjGk4mzyeRQtD76r7ryiY7twdyGxu7fZhcrl00uTf47Q9Y"
 );
@@ -52,7 +55,56 @@ app.get("/products/get", (req, res) => {
       }
     });
   });
+
+// API for SIGNUP
+
+app.post("/auth/signup", async (req, res) => {
+  const { email, password, fullName } = req.body;
+
+  const encrypt_password = await bcrypt.hash(password, 10);
+
+  const userDetail = {
+    email: email,
+    password: encrypt_password,
+    fullName: fullName,
+  };
+
+  const user_exist = await Users.findOne({ email: email });
+
+  if (user_exist) {
+    res.send({ message: "The Email is already in use !" });
+  } else {
+    Users.create(userDetail, (err, result) => {
+      if (err) {
+        res.status(500).send({ message: err.message });
+      } else {
+        res.send({ message: "User Created Succesfully" });
+      }
+    });
+  }
+});
+
+// API for LOGIN
+
+app.post("/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const userDetail = await Users.findOne({ email: email });
+
+  if (userDetail) {
+    if (await bcrypt.compare(password, userDetail.password)) {
+      res.send(userDetail);
+    } else {
+      res.send({ error: "invaild Password" });
+    }
+  } else {
+    res.send({ error: "user is not exist" });
+  }
+});
   
+
+//API FOR PAYMENT
+
 app.post("/payment/create", async (req, res) => {
     const total = req.body.amount;
     console.log("Payment Request recieved for this ruppess", total);
@@ -65,8 +117,43 @@ app.post("/payment/create", async (req, res) => {
         clientSecret: payment.client_secret,
     });
 }); 
-  //API FOR PAYMENT
 
+// API TO add ORDER DETAILS
+
+app.post("/orders/add", (req, res) => {
+  const products = req.body.basket;
+  const price = req.body.price;
+  const email = req.body.email;
+  const address = req.body.address;
+
+  const orderDetail = {
+    products: products,
+    price: price,
+    address: address,
+    email: email,
+  };
+
+  Orders.create(orderDetail, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("order added to database >> ", result);
+    }
+  });
+});
+
+app.post("/orders/get", (req, res) => {
+  const email = req.body.email;
+
+  Orders.find((err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      const userOrders = result.filter((order) => order.email === email);
+      res.send(userOrders);
+    }
+  });
+});
 
 
 app.listen(port , ()=> console.log("listening on port",port));

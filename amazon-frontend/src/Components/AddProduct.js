@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from "../axios"
 function AddProduct() {
-
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [imageURL, setImageURL] = useState("");
   const [price, setPrice] = useState(0);
@@ -23,7 +24,7 @@ function AddProduct() {
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={() => navigate("/")}>
         <img src="./amazon-logo.png" alt="" />
       </Logo>
 
@@ -108,22 +109,27 @@ const FormContainer = styled.form`
 
 const InputContainer = styled.div`
   width: 100%;
-  padding: 10px;
-  p {
-    font-size: 14px;
+  padding: 1px;
+  p{
+    font-size: 16px;
     font-weight: 600;
   }
-  input {
+  input{
     width: 95%;
+    background-color: #e6efef;
     height: 33px;
     padding-left: 5px;
-    border-radius: 5px;
-    border: 1px solid lightgray;
-    margin-top: 5px;
-    &:hover {
+    border:0.5px;
+    border-color: 0.5px solid lightgray;
+    border-radius: 3px;
+    margin-top: -15px;
+    &:hover{
       border: 1px solid orange;
+      border-radius: 3px;
+      width: 95%;
+      height: 33px;
     }
-  }
+  }  
 `;
 
 const Button = styled.button`

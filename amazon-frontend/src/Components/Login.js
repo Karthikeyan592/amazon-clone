@@ -1,68 +1,113 @@
-import React from 'react'
-import styled from 'styled-components';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import axios from "../axios";
+import { useStateValue } from "../StateProvider";
 function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [{}, dispatch] = useStateValue();
+
+  const login = (e) => {
+    e.preventDefault();
+
+    axios
+      .post("/auth/login", { email, password })
+      .then((res) => {
+        if (!res.data.error) {
+          dispatch({
+            type: "SET_USER",
+            user: res.data,
+          });
+
+          localStorage.setItem("user", JSON.stringify(res.data));
+
+          navigate("/");
+        } else if (res.data.error) {
+          alert(res.data.error);
+        }
+      })
+      .catch((err) => console.warn(err));
+  };
   return (
     <Container>
-        <Logo>
-            <img src="./amazon-logo.png" alt=""/>
-        </Logo>
-        <Form>
-          <h3>Sign-In</h3>
-          <InputContainer>
+      <Logo onClick={() => navigate("/")}>
+        <img src="./amazon-logo.png" alt="" />
+      </Logo>
+
+      <FormContainer>
+        <h3>Sign-In</h3>
+
+        <InputContainer>
           <p>Email</p>
-          <input type="email" placeholder='example@example.com'/>
+          <input
+            type="email"
+            placeholder="example@example.com"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+          />
         </InputContainer>
         <InputContainer>
           <p>Password</p>
-          <input type="password" placeholder='********' />
+          <input
+            type="password"
+            placeholder="********"
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+          />
         </InputContainer>
-        <LoginButton>Login</LoginButton>
-        <Infotext>
-          By continuing you agree to <span>Amazon's
-          Conditions</span> of Use and <span>Privacy
-          Notice</span>.
-        </Infotext>
-        </Form>
-        <SingUpButton>Create Account in Amazon</SingUpButton>
-    </Container>
-  )
-}
-const Container = styled.div`
-    width: 40%;
-    height: fit-content;
-    padding: 15px;
-    margin: auto;
-    flex-direction: column;
-    display: flex;
-    align-items: center;
 
+        <LoginButton onClick={login}>Login</LoginButton>
+
+        <InfoText>
+          By continuing, you agree to Amazon's <span>Conditions of Use </span>
+          and <span> Privacy Notice</span>
+        </InfoText>
+      </FormContainer>
+      <SignUpButton onClick={() => navigate("/signup")}>
+        Create Account in Amazon
+      </SignUpButton>
+    </Container>
+  );
+}
+
+const Container = styled.div`
+  width: 40%;
+  min-width: 450px;
+  height: fit-content;
+  padding: 15px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Logo = styled.div`
-    width: 150px;
-    margin-bottom: 20px;
-    img {
-      width: 100%;
-    }
+  width: 120px;
+  margin-bottom: 20px;
+  img {
+    width: 100%;
+  }
 `;
 
-const Form = styled.form`
-    border: 1px solid lightgrey;
-    height: 400px;
-    width: 55%;
-    flex-direction: column;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    padding: 15px;
-
-    h3{
-      font-size: 28px;
-      font-weight: 400;
-      line-height: 33px;
-      align-self: flex-start;
-      margin-bottom: 10px;
-    }
+const FormContainer = styled.form`
+  border: 1px solid lightgray;
+  width: 55%;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  h3 {
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 33px;
+    align-self: flex-start;
+    margin-bottom: 10px;
+  }
 `;
 
 const InputContainer = styled.div`
@@ -81,7 +126,6 @@ const InputContainer = styled.div`
     border-color: 0.5px solid lightgray;
     border-radius: 3px;
     margin-top: -15px;
-
     &:hover{
       border: 1px solid orange;
       border-radius: 3px;
@@ -99,31 +143,31 @@ const LoginButton = styled.button`
   outline: none;
   border-radius: 8px;
   margin-top: 40px;
+  &:hover {
+    background-color: #dfdfdf;
+    border: 1px solid gray;
+  }
 `;
 
-const Infotext = styled.p`
+const InfoText = styled.p`
   font-size: 12px;
   width: 100%;
-  margin-top: 30px;
   word-wrap: normal;
   word-break: normal;
-
-  span{
+  margin-top: 20px;
+  span {
     color: #426bc0;
   }
 `;
 
-const SingUpButton = styled.button`
+const SignUpButton = styled.button`
   width: 55%;
-  height: 33px;
+  height: 35px;
   font-size: 12px;
   margin-top: 20px;
-  border-radius: 5px;
-  border: none;
-  
-  &:hover{
+  &:hover {
     background-color: #dfdfdf;
-    border: 1px;
+    border: 1px solid gray;
   }
 `;
-export default Login
+export default Login;

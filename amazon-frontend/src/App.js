@@ -13,6 +13,7 @@ import Payment from './Components/Payment';
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import AddProduct from './Components/AddProduct';
+import Orders from './Components/Orders';
 
 const promise = loadStripe(
   "pk_test_51MZfL1SFs4aiNAvZS2pWgQCmxlxMhrlKuUrk8pcXUtJmgfTYcdo1NIStRFynMaPnCGyrnheKsqBWMcCvXwJ5szEI00yPmriT4z"
@@ -38,13 +39,21 @@ function App() {
             }
           />
           <Route path="/addproduct" element={<AddProduct/>}/>
+          <Route path="/orders" element={<Orders/>}/>
         </Routes>
       </Container>
     </Router>
   );
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+  width: 100vw;
+  height: 100vh;
+overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
 
 export default App;
 

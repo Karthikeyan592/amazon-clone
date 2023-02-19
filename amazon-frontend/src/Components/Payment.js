@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 function Payment() { 
 
-  const [{address,basket}] = useStateValue();
+  const [{ address, basket, user }, dispatch] = useStateValue();
 
   const elements = useElements();
   const stripe = useStripe();
@@ -27,15 +27,38 @@ function Payment() {
       const data = await axios.post("/payment/create", {
         amount: getBasketTotal(basket),
       });
-      const csecret = data.data.clientSecret;
-      setClientSecret(csecret);
-      console.log(csecret)
-      console.log("clientSecret is >>>>", clientSecret);
+
+      setClientSecret(data.data.clientSecret);
     };
 
     fetchClientSecret();
-
+    console.log("clientSecret is >>>>", clientSecret);
   }, []);
+
+  const confirmPayment = async (e) => {
+    e.preventDefault();
+
+    await stripe
+      .confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+        },
+      })
+      .then((result) => {
+        axios.post("/orders/add", {
+          basket: basket,
+          price: getBasketTotal(basket),
+          email: user.email,
+          address: address,
+        });
+
+        dispatch({
+          type: "EMPTY_BASKET",
+        });
+        navigate("/");
+      })
+      .catch((err) => console.warn(err));
+  };
 
   
   return (
@@ -45,7 +68,6 @@ function Payment() {
       <Main>
         <ReviewContainer>
           <h2>Review Your Order</h2>
-          <h2>{clientSecret}</h2>
           <AddressContainer>
             <h5>Shipping Address</h5>
 
@@ -109,7 +131,7 @@ function Payment() {
             prefix={"₹ "}
           />
 
-          <button>Place Order</button>
+          <button onClick={confirmPayment}>Place Order</button>
         </Subtotal>
       </Main>
     </Container>

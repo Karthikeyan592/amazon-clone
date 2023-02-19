@@ -81,7 +81,7 @@ const Container = styled.div`
   height: fit-content;
   margin: auto;
   background-color: rgb(234, 237, 237);
-  border: 1px solid red;
+  /* border: 1px solid red; */
   position: relative;
 `;
 const Main = styled.div`
